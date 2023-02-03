@@ -1,0 +1,33 @@
+debug: false
+management.endpoints.web.exposure.include: "*"
+
+logging:
+  level:
+    com.example.demo: debug
+    org.springframework.web.servlet: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/demo
+    username: test
+    password: test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate.ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      hibernate.default_batch_fetch_size: 100
+    open-in-view: false
+  sql.init.mode: always
+  data.rest:
+    base-path: /api
+    detection-strategy: annotated
+
+jwt:
+  header: Authorization
+  secret: 4c89a317476639aad7bddab1828b9eb24199d3b5c5991a823070b23773b4cc80edceeb230cc3bdd28ce05ecd4c619032e06570405bd184b09ba2b9bb1bb97edf
+  token-validity-in-seconds: 86400 # 24시간
