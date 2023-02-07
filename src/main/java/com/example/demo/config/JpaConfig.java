@@ -23,7 +23,7 @@ public class JpaConfig {
     * String password = principal.getPassword();
     * */
 
-    @Bean
+    @Bean // 인증 되어 있을때(로그인 상태) 작동
     public AuditorAware<String> auditorAware() {
         return () -> Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)

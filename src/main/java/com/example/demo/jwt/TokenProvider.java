@@ -1,8 +1,11 @@
 package com.example.demo.jwt;
 
+import com.example.demo.dto.security.CustomUserPrincipal;
+import com.example.demo.service.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -32,11 +37,15 @@ public class TokenProvider implements InitializingBean {
     private final long tokenValidityInMilliseconds;
     private Key key;
 
+    private final CustomUserDetailsService customUserDetailsService;
+
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
+            CustomUserDetailsService customUserDetailsService) {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     /* Authentication 객체의 권한 정보를 이용해서 토큰 생성
@@ -62,6 +71,7 @@ public class TokenProvider implements InitializingBean {
      * */
 
     public Authentication getAuthentication(String token) {
+
         Claims claims = Jwts
                 .parserBuilder()
                 .setSigningKey(key)
@@ -69,14 +79,16 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+//        Collection<? extends GrantedAuthority> authorities =
+//                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+//                        .map(SimpleGrantedAuthority::new)
+//                        .collect(Collectors.toList());
+//
+//        User principal = new User(claims.getSubject(), "", authorities);
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
     /* 토큰을 받아서 파싱해보고 발생하는 exception 들을 캐치, 문제가 있으면 false, 없으면 true 리턴
@@ -96,7 +108,6 @@ public class TokenProvider implements InitializingBean {
         }
         return false;
     }
-
 
     @Override // Bean 생성되고 주입 받은 후에 secret 값을 Base64 Decode 해서 Key 변수에 할당
     public void afterPropertiesSet() throws Exception {

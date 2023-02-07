@@ -3,15 +3,16 @@ package com.example.demo.domain;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Table(indexes = {
         @Index(columnList = "userId", unique = true),
-        @Index(columnList = "email", unique = true)
+        @Index(columnList = "email", unique = true),
 })
 @Entity
 public class UserAccount {
@@ -36,9 +37,31 @@ public class UserAccount {
         this.memo = memo;
     }
 
+//    private UserAccount(String userId, String userPassword, String email, String nickname, String memo, String createdBy) {
+//        this.userId = userId;
+//        this.userPassword = userPassword;
+//        this.email = email;
+//        this.nickname = nickname;
+//        this.memo = memo;
+//        this.createdBy = createdBy;
+//        this.modifiedBy = createdBy;
+//    }
+
+    // 인증이 된 상태
     public static UserAccount of(String userId, String userPassword, String email, String nickname, String memo) {
         return new UserAccount(userId, userPassword, email, nickname, memo);
     }
+
+
+//    // 인증이 된 상태
+//    public static UserAccount of(String userId, String userPassword, String email, String nickname, String memo) {
+//        return new UserAccount(userId, userPassword, email, nickname, memo, null);
+//    }
+//
+//    // 인증이 없는 상태에서 새로운 유저를 만들 때 (회원가입)
+//    public static UserAccount of(String userId, String userPassword, String email, String nickname, String memo, String createdBy) {
+//        return new UserAccount(userId, userPassword, email, nickname, memo, createdBy);
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,8 +72,12 @@ public class UserAccount {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(this.getUserId());
+    }
+
+    // 패스워드 암호화
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.userPassword = passwordEncoder.encode(userPassword);
     }
 
 }

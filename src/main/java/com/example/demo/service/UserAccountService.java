@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.domain.UserAccount;
 import com.example.demo.dto.SignupDto;
+import com.example.demo.dto.UserAccountDto;
 import com.example.demo.exception.DuplicateMemberException;
 import com.example.demo.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,27 +10,38 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder; // SecurityConfig 에서 Bean 으로 등록함
 
+    @Transactional(readOnly = true)
+    public Optional<UserAccountDto> searchUser(String username) {
+        return userAccountRepository.findById(username)
+                .map(UserAccountDto::from);
+    }
+
+//    @Transactional
+//    public UserAccountDto saveUser(String username, String password, String email, String memo, String nickname) {
+//        return UserAccountDto.from(
+//                userAccountRepository.save(UserAccount.of(username, password, email, nickname, memo, username)));
+//    }
+
     @Transactional
-    public SignupDto signup(SignupDto signupDto) {
-        if (userAccountRepository.findById(signupDto.getUserId()).orElse(null) != null) {
+    public UserAccountDto signup(UserAccountDto userAccountDto) {
+        if (userAccountRepository.findById(userAccountDto.userId()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
-        SignupDto user = SignupDto.builder()
-                .userId(signupDto.getUserId())
-                .userPassword(passwordEncoder.encode(signupDto.getUserPassword()))
-                .email(signupDto.getEmail())
-                .nickname(signupDto.getNickname())
-                .build();
-
-        return SignupDto.from(userAccountRepository.save(user.toEntity()));
+        //UserAccount newUser = UserAccount.of(userAccountDto.userId(), userAccountDto.userPassword(), userAccountDto.email(), userAccountDto.nickname(), userAccountDto.memo(), userAccountDto.userId());
+        UserAccount newUser = UserAccount.of(userAccountDto.userId(), userAccountDto.userPassword(), userAccountDto.email(), userAccountDto.nickname(), userAccountDto.memo());
+        newUser.encodePassword(passwordEncoder);
+        return UserAccountDto.from(userAccountRepository.save(newUser));
     }
 
 
