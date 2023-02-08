@@ -1,6 +1,5 @@
 package com.example.demo.jwt;
 
-import com.example.demo.dto.security.CustomUserPrincipal;
 import com.example.demo.service.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -12,15 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -30,21 +25,18 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class TokenProvider implements InitializingBean {
+public class JwtProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
+
+    private Key key;
     private final String secret;
     private final long tokenValidityInMilliseconds;
-    private Key key;
-
     private final CustomUserDetailsService customUserDetailsService;
 
-    public TokenProvider(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
-            CustomUserDetailsService customUserDetailsService) {
+    public JwtProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.token-validity-in-seconds}") long tokenValidityInMilliseconds, CustomUserDetailsService customUserDetailsService) {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+        this.tokenValidityInMilliseconds = tokenValidityInMilliseconds;
         this.customUserDetailsService = customUserDetailsService;
     }
 

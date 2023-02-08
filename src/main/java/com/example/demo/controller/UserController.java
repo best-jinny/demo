@@ -1,4 +1,4 @@
-package com.example.demo.controller.rest;
+package com.example.demo.controller;
 
 import com.example.demo.domain.UserAccount;
 import com.example.demo.dto.SignupDto;
