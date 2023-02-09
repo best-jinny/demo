@@ -1,9 +1,8 @@
 package com.example.demo.security.handler;
 
-import com.example.demo.jwt.JwtFilter;
-import com.example.demo.jwt.JwtProvider;
+import com.example.demo.security.jwt.JwtFilter;
+import com.example.demo.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,5 +33,6 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         // Response
         response.addHeader(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + token);
         response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write("Congratulation!");
     }
 }

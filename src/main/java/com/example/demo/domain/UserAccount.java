@@ -37,31 +37,9 @@ public class UserAccount {
         this.memo = memo;
     }
 
-//    private UserAccount(String userId, String userPassword, String email, String nickname, String memo, String createdBy) {
-//        this.userId = userId;
-//        this.userPassword = userPassword;
-//        this.email = email;
-//        this.nickname = nickname;
-//        this.memo = memo;
-//        this.createdBy = createdBy;
-//        this.modifiedBy = createdBy;
-//    }
-
-    // 인증이 된 상태
     public static UserAccount of(String userId, String userPassword, String email, String nickname, String memo) {
         return new UserAccount(userId, userPassword, email, nickname, memo);
     }
-
-
-//    // 인증이 된 상태
-//    public static UserAccount of(String userId, String userPassword, String email, String nickname, String memo) {
-//        return new UserAccount(userId, userPassword, email, nickname, memo, null);
-//    }
-//
-//    // 인증이 없는 상태에서 새로운 유저를 만들 때 (회원가입)
-//    public static UserAccount of(String userId, String userPassword, String email, String nickname, String memo, String createdBy) {
-//        return new UserAccount(userId, userPassword, email, nickname, memo, createdBy);
-//    }
 
     @Override
     public boolean equals(Object o) {

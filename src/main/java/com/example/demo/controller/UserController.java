@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.UserAccount;
-import com.example.demo.dto.SignupDto;
 import com.example.demo.dto.UserAccountDto;
 import com.example.demo.dto.security.CustomUserPrincipal;
 import com.example.demo.service.UserAccountService;
@@ -11,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 package com.example.demo.security.handler;
 
-import com.example.demo.exception.ErrorCode;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -16,15 +16,13 @@ public class AuthenticationFailureHandlerImpl implements AuthenticationFailureHa
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.getWriter().write(ErrorCode.INVALID_PERMISSION.name());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         if (exception instanceof UsernameNotFoundException) {
-            response.getWriter().write("fff");
+            response.getWriter().write("Username Not Found");
+        } else if (exception instanceof BadCredentialsException) {
+            response.getWriter().write("Bad Credentials");
         }
-
-        response.getWriter().write(" ggg");
-
 
     }
 }

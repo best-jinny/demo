@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 
 /*
 * Spring Security 에서 사용자 정보를 불러오기 위해서 구현해야하는 인터페이스 `UserDetails` 의 구현체
-* 스프링 시큐리티가 인지할 수 있는 인증 정보를 담고 있음
+* Security 에서 다루는 유저 정보(UserDetails)와 실제 Domain Entity 사이에서 차이가 있을 수 있기 때문에
+* 따로 필요한 데이터만을 이용해서 UserDetails 객체를 생성한다.
 * */
 public record CustomUserPrincipal(
         String username, // 계정의 고유한 값
