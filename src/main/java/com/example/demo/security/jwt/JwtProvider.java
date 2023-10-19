@@ -43,6 +43,11 @@ public class JwtProvider implements InitializingBean {
     /* Authentication 객체의 권한 정보를 이용해서 토큰 생성
     * */
     public String createToken(Authentication authentication) {
+
+        // Oauth2 로그인 유저 
+        // CustomOauth2UserPrincipal userPrincipal = (CustomOauth2UserPrincipal) authentication.getPrincipal();     
+
+        
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -51,7 +56,7 @@ public class JwtProvider implements InitializingBean {
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(authentication.getName())   // .setSubject(userPrincipal.getId())
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
