@@ -34,5 +34,17 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         response.addHeader(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + token);
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().write("Congratulation!");
+
+        // React redirect 
+        String url = makeRedirectUrl(token);
+        getRedirectStrategy().sendRedirect(request, response, url);
+        
     }
+
+    private String makeRedirectUrl(String token) {
+        return UriComponentsBuilder.fromUriString("http://192.168.100.191:8081/oauth2")
+                .query("code="+token)
+                .build().toUriString();
+    }
+    
 }
