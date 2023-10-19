@@ -28,4 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(CustomUserPrincipal::from)
                 .orElseThrow(() -> new UsernameNotFoundException(username + " -> 유저를 찾을 수 없습니다."));
     }
+
+    // @Override
+    // public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {  
+
+    //     return userAccountRepository.findBySocialId(id) // kakao, naver 에서 제공하는 유저 식별 id 로 사용자 조회 
+    //             .map(UserAccountResponseDto::new)
+    //             .map(CustomUserPrincipal::new)
+    //             .orElseThrow(() -> new UsernameNotFoundException(" => 유저를 찾을 수 없습니다."));
+    // }
 }
