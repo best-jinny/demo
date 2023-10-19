@@ -52,12 +52,23 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/login", "/api/signup").permitAll()
+                .antMatchers("/login", "/api/signup", "/auth/**", "/oauth2/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
+
+                 // oauth2 login 설정
+                .oauth2Login()
+                .successHandler(authenticationSuccessHandler)
+                .redirectionEndpoint()
+                .baseUri("/login/oauth2/code/**")
+                .and()
+                .userInfoEndpoint()
+                .userService(oAuth2UserService);
+
+            
 
         return httpSecurity.build();
     }
@@ -89,5 +100,18 @@ public class SecurityConfig {
     @Bean // spring security 는 `{암호화 방식}암호화된 비밀번호` 형식의 패스워드 필요. There is no PasswordEncoder mapped for the id "null" 에러 발생
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    // Spring security + react cors 설정
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
